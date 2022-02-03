@@ -30,10 +30,11 @@ class User
 		file.open(abstract_path + PATH_ADMIN, fstream::in);
 		string name;
 		file >> name;
+
 		file.close();
 
 		if (name == user.username)
-			user.admin = true;
+			user.admin == true;
 		return user;
 	}
 
@@ -46,6 +47,10 @@ public:
 		file.open(path + username + "/data.txt", fstream::out);
 		file << password << "\n";
 		file.close();
+	}
+
+	void menu() {
+		
 	}
 
 	static User regestration(string username, string password) {
