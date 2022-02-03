@@ -6,13 +6,19 @@
 
 fstream User::file;
 string User::path;
+string User::abstract_path;
+
 int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	User::init(PATH);
 	try {
 		//User::regestration("Maxim", "maxim15102003");
-		User::login("Maxim", "maxim15102003");
+		User us = User::login("Maxim", "maxim15102003");
+		if (us.is_admin())
+			cout << "User is admin\n";
+		else
+			cout << "User is not admin\n";
 
 	}
 	catch (exception exp) {
