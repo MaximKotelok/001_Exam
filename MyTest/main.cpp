@@ -1,12 +1,14 @@
 #include <iostream>
 #include <Windows.h>
+#include <string>
 #include "User.h"
 #include "Test.h"
+#include "FilePathes.h"
 
-#define MAIN_PATH "/my_test"
-#define PATH_TO_USERS "/my_test/users"
-#define PATH_TO_TESTS "/my_test/tests"
 
+const string Pathes::MAIN_PATH = "/my_test";
+const string Pathes::PATH_TO_USERS = MAIN_PATH + "/users";
+const string Pathes::PATH_TO_TESTS = MAIN_PATH + "/tests";
 
 int main() {
 	SetConsoleCP(1251);
@@ -25,13 +27,13 @@ int main() {
 	//catch (exception exp) {
 	//	cout << exp.what();
 	//}
-	string directory = "/Історія";
-	string path = PATH_TO_TESTS + directory;
-	_mkdir(PATH_TO_TESTS);
+	string directory = "/Українська_мова";
+	string path = Pathes::PATH_TO_TESTS + directory;
+	_mkdir(Pathes::PATH_TO_TESTS.c_str());
 	_mkdir(path.c_str());
 	fs.open(path +"/test.txt", fstream::in);
 	
-	Test t = Test::create(fs);
+	Test t = Test::load(fs);
 	fs.close();
 	t.start(0, 0);
 

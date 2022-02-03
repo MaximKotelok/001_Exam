@@ -38,7 +38,12 @@ public:
 	}
 
 	bool is_correct(int answer) {
-		return (correct_answer == answers[answer - 1]);
+		bool res = (correct_answer == answers[answer - 1]);
+		if (res)
+			cout << "Правильно!\n";
+		else
+			cout << "Неправильно! Правильна відповідь: " + correct_answer << "\n";
+		return res;
 	}
 
 	friend fstream& operator<<(fstream& fout, Question& quest) {
@@ -97,10 +102,10 @@ class Test
 	void save(fstream& file) {
 		string tmp = title;
 		replace(tmp.begin(), tmp.end(), ' ', '_');
-		file << title<<"\n";
+		file << tmp<<"\n";
 		for (auto it = questions.begin(); it != questions.end(); it++) {
 			file << *it;
-			if (it != questions.end()--)
+			if (it != --questions.end())
 				file << "next\n";
 		}
 		file << "end\n";
@@ -187,6 +192,7 @@ public:
 	static Test load(fstream& file) {
 		Test t;
 		file >> t.title;
+		replace(t.title.begin(), t.title.end(), '_', ' ');
 		vector<Question> questions;
 		Question el;
 		string check_end;
