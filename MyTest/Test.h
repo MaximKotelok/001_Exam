@@ -4,8 +4,11 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <direct.h>
 
 using namespace std;
+
+
 
 class Question {
 	string question;
@@ -100,17 +103,20 @@ class Test
 	vector<Question> questions;
 	int question_now;
 	int stat;
+	string path;
 
 	Test() {}
 	
-	Test(string title, vector<Question> questions) {
+	Test(string title, vector<Question> questions, string path) {
 		this->title = title;
 		this->questions = questions;
+		this->path = path;
 		question_now = 0;
 		stat = 0;
 	}
 
 	void save(fstream& file) {
+		file.open(path, fstream::out);
 		string tmp = title;
 		replace(tmp.begin(), tmp.end(), ' ', '_');
 		file << tmp<<"\n";
@@ -120,6 +126,7 @@ class Test
 				file << "next\n";
 		}
 		file << "end\n";
+		file.close();
 
 	}
 	
@@ -132,15 +139,49 @@ class Test
 		return total;
 	}
 
+	string get_path_to_result() {
+		string res = path;
+		int index = -1;
+		for (int i = 0; i < res.length(); i++)
+			if (res[i] == '\\')
+				index = i;
+		res.erase(res.begin() + index, res.end());
+		res += "\\results";
+		return res;
+	}
+
+
 public:
 
-	void start(int question_now,int stat) {
-		this->question_now = question_now;
-		this->stat = stat;
+	string get_title() {
+		return title;
+	}
+
+	string start(fstream& file,string username) {
+		_mkdir(get_path_to_result().c_str());
+		string result_path = get_path_to_result()+ "\\" + username + "_result.txt";
+		file.open(result_path, fstream::in);
+		string status;
+		string result;
+		if (!file.is_open()) {
+			this->question_now = 0;
+			this->stat = 0;
+		}
+		else {
+			file >> status;
+			if (status == "not_ended") 
+				file >> question_now >> stat;
+		}
+		if (status != "ended") {
+
+		file.close();
 		int choice;
 
 		for (; question_now < questions.size(); question_now++) {
+			file.open(result_path, fstream::out);
 
+			file << "not_ended " << question_now << " " << stat << "\n";
+			file.close();
 			questions[question_now].set_random_positions();
 			questions[question_now].print(question_now +1);
 			do {
@@ -152,12 +193,17 @@ public:
 
 		}
 		double score = calculate_score();
+		file.open(result_path, fstream::out);
+		result =  stat + " " + to_string(questions.size()) + "\n";
+		file << "ended " << result;
+		file.close();
 		cout << "Òâîÿ îö³íêà: " << score << " | Îö³íêà: " << score * 0.12<<"\n";
-
+		}
+		return result;
 	}
 
 
-	static Test create(fstream& file) {
+	static Test create(fstream& file, string path) {
 		string title;
 		string question;
 		string answer;
@@ -194,13 +240,14 @@ public:
 			questions.push_back(Question(question, answers, answer));
 
 		} while (true);
-		Test t = Test(title, questions);
+		Test t = Test(title, questions, path);
+		t.path = path;
 		t.save(file);
-
 		return t;
 	}
 
-	static Test load(fstream& file) {
+	static Test load(fstream& file, string path) {
+		file.open(path, fstream::in);
 		Test t;
 		file >> t.title;
 		replace(t.title.begin(), t.title.end(), '_', ' ');
@@ -216,6 +263,8 @@ public:
 			
 		} while (check_end != "end");
 		t.questions = questions;
+		t.path = path;
+		file.close();
 		return t;
 	}
 	

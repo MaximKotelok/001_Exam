@@ -52,6 +52,45 @@ class Menu
 		return get_directories(Pathes::PATH_TO_USERS).size();
 	}
 
+	void regular_user_menu() {
+
+	}
+
+	void admin_menu() {
+		cout << "1. «м≥нити ≥м'€\n";
+		cout << "2. «м≥нити пароль\n";
+
+		int choice;
+
+		(cin>>choice).get();
+
+		switch (choice) {
+		case 1: {
+			string new_username;
+			cin >> new_username;
+			if (rename((Pathes::PATH_TO_USERS + "\\" + user.get_username()).c_str(), (Pathes::PATH_TO_USERS + "\\" + new_username).c_str()) == 0) {
+				fs.open(Pathes::MAIN_PATH + "\\admin.txt", fstream::out);
+				fs << new_username;
+				fs.close();
+			}
+			
+		}
+			break;
+		case 2:
+		{
+			string new_password;
+			cin >> new_password;
+
+			fs.open(Pathes::PATH_TO_USERS+"\\"+user.get_username()+"\\data.txt", fstream::out);
+			fs << new_password;
+			fs.close();
+
+		}
+			break;
+		}
+
+	}
+
 public:
 	list<string> get_all_from_directories(string path) {
 		list<string> directories;
@@ -107,10 +146,10 @@ public:
 		directories = get_files(path);
 		it = directories.begin();
 		advance(it, get_index_of_directory(path, directories));
-
-		fs.open(*it, fstream::in);
-		Test t = Test::load(fs);
-		t.start(0, 0);
+		Test t = Test::load(fs, *it);
+		string score = t.start(fs,user.get_username());
+		fs.open(Pathes::PATH_TO_USERS+"\\"+user.get_username()+"\\"+t.get_title()+".txt", fstream::out);
+		fs << score;
 		fs.close();
 
 	}
@@ -131,7 +170,11 @@ public:
 			}
 		} while (!user.is_authorization());
 
-		cout << user.is_admin();
+		do {
+			if (user.is_admin())
+				admin_menu();
+
+		}while(user.is_authorization());
 
 	}
 };
