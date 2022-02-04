@@ -1,16 +1,14 @@
 #include <iostream>
 #include <Windows.h>
+#include <time.h>
 #include <string>
 #include "User.h"
 #include "Test.h"
 #include "FilePathes.h"
-
-
-const string Pathes::MAIN_PATH = "/my_test";
-const string Pathes::PATH_TO_USERS = MAIN_PATH + "/users";
-const string Pathes::PATH_TO_TESTS = MAIN_PATH + "/tests";
+#include "Menu.h"
 
 int main() {
+	srand(time(0));
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	fstream fs;
@@ -26,16 +24,18 @@ int main() {
 	//}
 	//catch (exception exp) {
 	//	cout << exp.what();
-	//}
-	string directory = "/Українська_мова";
-	string path = Pathes::PATH_TO_TESTS + directory;
-	_mkdir(Pathes::PATH_TO_TESTS.c_str());
-	_mkdir(path.c_str());
-	fs.open(path +"/test.txt", fstream::in);
-	
-	Test t = Test::load(fs);
-	fs.close();
-	t.start(0, 0);
+	////}
+	// 
+	Menu();
+	//string directory = "/Українська_мова";
+	//string path = Pathes::PATH_TO_TESTS + directory;
+	//_mkdir(Pathes::PATH_TO_TESTS.c_str());
+	//_mkdir(path.c_str());
+	//fs.open(path +"/test.txt", fstream::in);
+	//
+	//Test t = Test::load(fs);
+	//fs.close();
+	//t.start(0, 0);
 
 	return 0;
 }

@@ -22,7 +22,18 @@ public:
 	}
 	
 	void set_random_positions() {
-		random_shuffle(answers.begin(), answers.end());
+		int new_pos;
+		string tmp;
+		for (int loop = 0; loop < rand() % 5; loop++) {
+			for (int i = 0; i < answers.size(); i++) {
+				new_pos = rand() % answers.size();
+				tmp = answers[i];
+				answers[i] = answers[new_pos];
+				answers[new_pos] = tmp;
+			}
+
+		}
+
 	}
 
 	void print(int number) {

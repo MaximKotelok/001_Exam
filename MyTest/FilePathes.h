@@ -3,8 +3,9 @@
 using namespace std;
 class Pathes {
 public:
-	static const string MAIN_PATH;
-	static const string PATH_TO_USERS;
-	static const string PATH_TO_TESTS;
+	inline static const string MAIN_PATH = "D:\\my_test";
+	//inline static const string MAIN_PATH = "\\my_test";
+	inline static const string PATH_TO_USERS = MAIN_PATH + "\\users";
+	inline static const string PATH_TO_TESTS = MAIN_PATH + "\\tests";
 	
 };

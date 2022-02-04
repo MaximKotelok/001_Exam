@@ -5,9 +5,7 @@
 #include <direct.h>
 #include <string>
 
-#define PATH "/users/"
-#define PATH_ADMIN "/admin.txt"
-
+#include "FilePathes.h"
 using namespace std;
 class User
 {
@@ -15,55 +13,61 @@ class User
 	string password;
 	bool admin;
 
-
-	static fstream file;
-	static string path;
-	static string abstract_path;
+	bool authorization;
 
 	User(string username, string password) {
 		this->username = username;
 		this->password = password;
 		admin = false;
+		authorization = true;
 	}
 
-	static User check_admin(User user) {
-		file.open(abstract_path + PATH_ADMIN, fstream::in);
+	static User check_admin(fstream& file, User user) {
+		file.open(Pathes::MAIN_PATH+"\\admin.txt", fstream::in);
 		string name;
 		file >> name;
-
 		file.close();
 
 		if (name == user.username)
-			user.admin == true;
+			user.admin = true;
+		
 		return user;
 	}
 
 public:
+	User() {
+		username = password = "guest";
+		authorization = admin = false;
+	}
+
 	bool is_admin() {
 		return admin;
 	}
+	bool is_authorization() {
+		return authorization;
+	}
 
-	void save() {
-		file.open(path + username + "/data.txt", fstream::out);
+	void save(fstream& file) {
+		file.open(Pathes::PATH_TO_USERS + "\\" + username + "\\data.txt", fstream::out);
 		file << password << "\n";
 		file.close();
 	}
 
-	void menu() {
-		
+	string get_username() {
+		return username;
 	}
 
-	static User regestration(string username, string password) {
-		if (_mkdir((path + username).c_str()) != 0)
+	static User regestration(fstream& file, string username, string password) {
+		if (_mkdir((Pathes::PATH_TO_USERS + "\\" + username).c_str()) != 0)
 			throw exception("Користувач уже існує!");
 		User tmp = User(username, password);
-		tmp.save();
+		tmp.save(file);
 		return tmp;
 	}
 
-	static User login(string username, string password) {
+	static User login(fstream& file,string username, string password) {
 
-		file.open(path + username + "/data.txt", fstream::in);
+		file.open(Pathes::PATH_TO_USERS+"\\" + username + "\\data.txt", fstream::in);
 		if (!file.is_open())
 			throw exception("Такого користувача не існує!");
 		string check;
@@ -71,18 +75,10 @@ public:
 		file.close();
 		
 		if (check == password)
-			return check_admin(User(username, password));
+			return check_admin(file,User(username, password));
 		else
 			throw exception("Неправильний пароль!");
-
-	}
-
-	static void init(string new_path) {
-		abstract_path = new_path;
-		path = new_path+PATH;
-		
-		if(_mkdir(new_path.c_str()) == 0 && _mkdir(path.c_str()) == 0)
-			throw exception("Перший запуск");
+	
 	}
 
 };
