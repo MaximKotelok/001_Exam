@@ -6,6 +6,19 @@
 #include "Test.h"
 #include "FilePathes.h"
 #include "Menu.h"
+#include "Statistic.h"
+
+ostream& operator<<(ostream& os, const element el) {
+	double percent = Test::calculate_score(el.correct, el.all_questions);
+	os << el.username << " - " << el.title << " | "<< el.correct <<"/" << el.all_questions << " | " << percent << "% | ÷е " << percent * 0.12 << " бал≥в\n";
+	return os;
+}
+
+fstream& operator<<(fstream& fout, const element el) {
+	double percent = Test::calculate_score(el.correct, el.all_questions);
+	fout << el.username << " - " << el.title << " | " << el.correct << "/" << el.all_questions << " | " << percent << "% | ÷е " << percent * 0.12 << " бал≥в\n";
+	return fout;
+}
 
 int main() {
 	srand(time(0));

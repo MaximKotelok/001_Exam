@@ -142,12 +142,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Statistic.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectoryMenu.h" />
     <ClInclude Include="FilePathes.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Statistic.h" />
     <ClInclude Include="Test.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>

@@ -27,16 +27,18 @@ public:
 	void set_random_positions() {
 		int new_pos;
 		string tmp;
-		for (int loop = 0; loop < rand() % 5; loop++) {
+		int loop = rand() % 5;
+		for (; loop >= 0; loop--) {
 			for (int i = 0; i < answers.size(); i++) {
-				new_pos = rand() % answers.size();
+				do {
+					new_pos = rand() % answers.size();
+				} while (new_pos == i);
 				tmp = answers[i];
 				answers[i] = answers[new_pos];
 				answers[new_pos] = tmp;
 			}
 
 		}
-
 	}
 
 	void print(int number) {
@@ -116,7 +118,7 @@ class Test
 	}
 
 	void save(fstream& file) {
-		file.open(path, fstream::out);
+		file.open(path+"\\test.txt", fstream::out);
 		string tmp = title;
 		replace(tmp.begin(), tmp.end(), ' ', '_');
 		file << tmp<<"\n";
@@ -129,15 +131,7 @@ class Test
 		file.close();
 
 	}
-	
-	double calculate_score() {
-		if (stat == 0)
-			return false;
-		double total = stat;
-		total /= questions.size();
-		total *= 100;
-		return total;
-	}
+
 
 	string get_path_to_result() {
 		string res = path;
@@ -152,6 +146,14 @@ class Test
 
 
 public:
+
+
+	static double calculate_score(int stat, int size) {
+		double total = stat;
+		total /= size;
+		total *= 100;
+		return total;
+	}
 
 	string get_title() {
 		return title;
@@ -192,13 +194,18 @@ public:
 			this->stat += questions[question_now].is_correct(choice);
 
 		}
-		double score = calculate_score();
 		file.open(result_path, fstream::out);
-		result =  stat + " " + to_string(questions.size()) + "\n";
+		result = to_string(stat) + " " + to_string(questions.size()) + "\n";
 		file << "ended " << result;
 		file.close();
-		cout << "Твоя оцінка: " << score << " | Оцінка: " << score * 0.12<<"\n";
 		}
+		else {
+			file >> stat;
+			file.close();
+
+		}
+		double percent = calculate_score(stat, questions.size());
+		cout << username << " - " << title << " | " << stat << "/" << questions.size() << " | " << percent << "% | Це " << percent * 0.12 << " балів\n";
 		return result;
 	}
 
@@ -212,6 +219,8 @@ public:
 
 		cout << "Назва тесту: ";
 		getline(cin, title);
+		path += "\\" + title;
+		_mkdir(path.c_str());
 		do {
 			cout << "Питання: ";
 			getline(cin, question);
@@ -242,6 +251,7 @@ public:
 		} while (true);
 		Test t = Test(title, questions, path);
 		t.path = path;
+		_mkdir((path + "\\results").c_str());
 		t.save(file);
 		return t;
 	}

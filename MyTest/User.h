@@ -6,6 +6,7 @@
 #include <string>
 
 #include "FilePathes.h"
+#include "DirectoryMenu.h"
 using namespace std;
 class User
 {
@@ -47,6 +48,10 @@ public:
 		return authorization;
 	}
 
+	void exit() {
+		authorization = false;
+	}
+
 	void save(fstream& file) {
 		file.open(Pathes::PATH_TO_USERS + "\\" + username + "\\data.txt", fstream::out);
 		file << password << "\n";
@@ -57,12 +62,27 @@ public:
 		return username;
 	}
 
-	static User regestration(fstream& file, string username, string password) {
+
+	int set_username(string username) {
+		change_user_directory(this->username, username);
+		this->username = username;
+		return 0;
+	}
+	
+	static int change_user_directory(string old_username, string new_username) {
+		return DirectoryMenu::change_directory_name((Pathes::PATH_TO_USERS + "\\" + old_username), (Pathes::PATH_TO_USERS + "\\" + new_username));
+	}
+
+	static void registration(fstream& file, string username, string password) {
+		_mkdir(Pathes::PATH_TO_USERS.c_str());
 		if (_mkdir((Pathes::PATH_TO_USERS + "\\" + username).c_str()) != 0)
 			throw exception("Користувач уже існує!");
 		User tmp = User(username, password);
 		tmp.save(file);
-		return tmp;
+	}
+
+	static void delete_user(string username) {
+		
 	}
 
 	static User login(fstream& file,string username, string password) {

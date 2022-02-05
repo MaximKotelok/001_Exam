@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <direct.h>
 #include <string>
-#include <filesystem>
 #include <list>
+
+#include "User.h"
 #include "FilePathes.h"
 #include "Test.h"
-#include "User.h"
-namespace fs = std::filesystem;
+#include "Statistic.h"
+
 
 
 class Menu
@@ -17,25 +18,22 @@ class Menu
 	fstream fs;
 	User user;
 
-	void create_basic_admin() {
+	void create_basic_admin(string username) {
 		fs.open(Pathes::MAIN_PATH + "\\admin.txt", fstream::out);
-		fs << "admin";
+		fs << username;
 		fs.close();
-		_mkdir((Pathes::PATH_TO_USERS + "\\admin").c_str());
-		fs.open(Pathes::PATH_TO_USERS + "\\admin\\data.txt", fstream::out);
-		fs << "admin";
-		fs.close();
-
 	}
 
-	void regestration() {
+	void registration(bool is_admin) {
 		string username, password;
 		cout << "-==РЕЄСТРАЦІЯ=--\n";
 		cout << "Уведи свій новий нікнейм: \n";
 		cin >> username;
 		cout << "Уведи свій новий пароль: \n";
 		cin >> password;
-		user = User::regestration(fs, username, password);
+		User::registration(fs, username, password);
+		if (is_admin)
+			create_basic_admin(username);
 	}
 
 	void login() {
@@ -49,108 +47,162 @@ class Menu
 	}
 
 	int check_users() {
-		return get_directories(Pathes::PATH_TO_USERS).size();
+		return DirectoryMenu::get_directories(Pathes::PATH_TO_USERS).size();
 	}
 
 	void regular_user_menu() {
+		cout << "--= USER MENU=--\n";
+		cout << "0. Вийти\n";
+		cout << "1. Запустити тест\n";
+		cout << "2. Результати тестів\n";
 
+		int choice;
+
+		(cin >> choice).get();
+
+		if (choice == 0) {
+			user.exit();
+			return;
+		}
+
+		switch (choice) {
+
+		case 1: 
+			lunch_test();
+			  break;
+		case 2:
+			Statistic::print_statistic(fs, Statistic::get_user_statistic(fs, user.get_username()));
+			break;
+		}
 	}
 
 	void admin_menu() {
+		cout << "--= ADMIN MENU=--\n";
+		cout << "0. Вийти\n";
 		cout << "1. Змінити ім'я\n";
 		cout << "2. Змінити пароль\n";
+		cout << "3. Передивитися статистику користувача\n";
+		cout << "4. Передивитися статистику категорії\n";
+		cout << "5. Передивитися статистику конкретного тесту\n";
+		cout << "6. Додати категорію\n";
+		cout << "7. Додати тест\n";
+		cout << "8. Додати користувача\n";
+		cout << "9. Видалити користувача\n";
+		cout << "10. Видалити результати теста користувача\n";
 
 		int choice;
 
-		(cin>>choice).get();
+		(cin >> choice).get();
 
-		switch (choice) {
-		case 1: {
-			string new_username;
-			cin >> new_username;
-			if (rename((Pathes::PATH_TO_USERS + "\\" + user.get_username()).c_str(), (Pathes::PATH_TO_USERS + "\\" + new_username).c_str()) == 0) {
-				fs.open(Pathes::MAIN_PATH + "\\admin.txt", fstream::out);
-				fs << new_username;
-				fs.close();
+		if (choice == 0) {
+			user.exit();
+			return;
+		}
+		try {
+
+			switch (choice) {
+			case 1: {
+				string new_username;
+				cin >> new_username;
+				if (user.set_username(new_username) == 0) {
+					fs.open(Pathes::MAIN_PATH + "\\admin.txt", fstream::out);
+					fs << new_username;
+					fs.close();
+				}
+
 			}
-			
-		}
+				  break;
+			case 2:
+			{
+				string new_password;
+				cin >> new_password;
+
+				fs.open(Pathes::PATH_TO_USERS + "\\" + user.get_username() + "\\data.txt", fstream::out);
+				fs << new_password;
+				fs.close();
+
+			}
 			break;
-		case 2:
-		{
-			string new_password;
-			cin >> new_password;
+			case 3: {
 
-			fs.open(Pathes::PATH_TO_USERS+"\\"+user.get_username()+"\\data.txt", fstream::out);
-			fs << new_password;
-			fs.close();
+				string path = Pathes::PATH_TO_USERS;
+				if (DirectoryMenu::menu(path, "results", user.get_username())) {
+					Statistic::print_statistic(fs, Statistic::get_user_statistic(fs, DirectoryMenu::get_end_of_path(path, 1)));
+				}
+			}
+				  break;
+			case 4:
+			{
+				string path = Pathes::PATH_TO_TESTS;
+				if (DirectoryMenu::menu(path, "end", "")) {
+					string category= DirectoryMenu::get_end_of_path(path, 1);
+					Statistic::print_statistic(fs, Statistic::get_category_statistic(fs, category));
+				}
+			}
+				break;
+			case 5:
+			{
+				string path = Pathes::PATH_TO_TESTS;
+				if (DirectoryMenu::menu(path, "results", "end")) {
+					string category = DirectoryMenu::get_end_of_path(path, 2);
+					string test = DirectoryMenu::get_end_of_path(path, 1);
+					Statistic::print_statistic(fs, Statistic::get_test_statistic(fs, category, test));
+				}
+			}break;
+			case 6: {
+				string directory_name;
+				cout << "Назва директорії: ";
+				getline(cin, directory_name);
+				if(_mkdir((Pathes::PATH_TO_TESTS +"\\" + directory_name).c_str()) == 0)_mkdir((Pathes::PATH_TO_TESTS + "\\" + directory_name+"\\"+"end").c_str());
+
+			}
+				break;
+			case 7: {
+				string path = Pathes::PATH_TO_TESTS;
+				if (DirectoryMenu::menu(path, "end", "")) {
+					Test::create(fs, path);
+				}
+			}
+				break;
+			case 8:
+				registration(false);
+				break;
+			case 9:
+				string path = Pathes::PATH_TO_USERS;
+				if (DirectoryMenu::menu(path, "results", user.get_username())) {
+					Statistic::print_statistic(fs, Statistic::get_user_statistic(fs, DirectoryMenu::get_end_of_path(path, 1)));
+				}
+				break;
+
+			}
+
 
 		}
-			break;
+		catch (exception exp) {
+			cout << exp.what() << "\n";
 		}
-
 	}
+
 
 public:
-	list<string> get_all_from_directories(string path) {
-		list<string> directories;
-		for (const auto& entry : fs::directory_iterator(path)) {
-			string directory = entry.path().string();
 
-			directories.push_back(directory);
-
-		}
-		return directories;
-	}
-
-	list<string>get_files(string path) {
-		list<string> directories = get_all_from_directories(path);
-		directories.remove_if([](string& str) {
-			return (str.find(".txt") == string::npos);
-			});
-		return directories;
-	}
-
-	list<string> get_directories(string path) {
-		list<string> directories = get_all_from_directories(path);
-		directories.remove_if([](string& str) {
-			return !(str.find(".txt") == string::npos);
-			});
-		return directories;
-	}
-
-	int get_index_of_directory(string path, list<string> directories) {
-		auto it = directories.begin();
-		for (int i = 0; i < directories.size(); i++, it++) {
-			it->erase(it->begin(), it->begin() + path.length());
-			it->erase(remove(it->begin(), it->end(), '\\'), it->end());
-			auto pos = it->find(".txt");
-			if (pos != std::string::npos)
-				it->erase(it->find(".txt"), 4);
-			cout << i + 1 << ". " << *it << "\n";
-		}
-		int choice;
-		do {
-			(cin >> choice).get();
-
-		} while (choice < 1 || choice > directories.size());
-		return choice - 1;
-	}
 
 	void lunch_test() {
-		list<string> directories = get_directories(Pathes::PATH_TO_TESTS);
-		auto it = directories.begin();
-		advance(it, get_index_of_directory(Pathes::PATH_TO_TESTS, directories));
-		string path = *it;
-		directories.clear();
-		directories = get_files(path);
-		it = directories.begin();
-		advance(it, get_index_of_directory(path, directories));
-		Test t = Test::load(fs, *it);
-		string score = t.start(fs,user.get_username());
-		fs.open(Pathes::PATH_TO_USERS+"\\"+user.get_username()+"\\"+t.get_title()+".txt", fstream::out);
+		string path = Pathes::PATH_TO_TESTS;
+		if (DirectoryMenu::menu(path, "results", "end")) {
+			path += "\\test.txt";
+
+
+		Test my_test = Test::load(fs, path);
+		string score = my_test.start(fs, user.get_username());
+		string title = DirectoryMenu::get_end_of_path(path, 3);
+		cout << title<<"---------";
+		_mkdir((Pathes::PATH_TO_USERS + "\\" + user.get_username() + "\\results").c_str());
+		_mkdir((Pathes::PATH_TO_USERS + "\\" + user.get_username() + "\\results\\"+ title).c_str());
+		fs.open(Pathes::PATH_TO_USERS + "\\" + user.get_username() + "\\results\\" + title+"\\"+ my_test.get_title() + ".txt", fstream::out);
 		fs << score;
 		fs.close();
+		}
 
 	}
 
@@ -158,10 +210,9 @@ public:
 		do {
 			try {
 
-				if (_mkdir(Pathes::MAIN_PATH.c_str()) == 0 || _mkdir(Pathes::PATH_TO_USERS.c_str()) == 0 || check_users() <= 1) {
-					create_basic_admin();
-					regestration();
-				}
+				if (_mkdir(Pathes::MAIN_PATH.c_str()) == 0 || _mkdir(Pathes::PATH_TO_USERS.c_str()) == 0 || check_users() == 0)
+					registration(check_users() == 0);
+				
 				else
 					login();
 			}
@@ -171,10 +222,12 @@ public:
 		} while (!user.is_authorization());
 
 		do {
+			cout << "--=" << user.get_username() << "=--\n";
 			if (user.is_admin())
 				admin_menu();
-
-		}while(user.is_authorization());
+			else
+				regular_user_menu();
+		} while (user.is_authorization());
 
 	}
 };
