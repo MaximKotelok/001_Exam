@@ -48,7 +48,7 @@ string User::get_username() {
 }
 
 
-int User::set_username(string username) {
+int User::set_username(string& username) {
 	transform(username.begin(), username.end(), username.begin(),
 		[](char& c) { return std::tolower(c); });
 	if (DirectoryMenu::change_directory_name((SettingsConst::PATH_TO_USERS + "\\" + this->username), (SettingsConst::PATH_TO_USERS + "\\" + username)) != 0) {

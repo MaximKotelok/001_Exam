@@ -32,7 +32,7 @@ public:
 	string get_username();
 
 
-	int set_username(string username);
+	int set_username(string& username);
 
 
 	static void registration(fstream& file, string& username, string password);

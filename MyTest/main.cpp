@@ -4,6 +4,25 @@
 
 #include "Menu.h"
 
+fstream& operator<<(fstream& fout, Question& quest);
+
+fstream& operator>>(fstream& fin, Question& quest);
+
+ostream& operator<<(ostream& os, const element& el);
+
+fstream& operator<<(fstream& fout, const element& el);
+
+int main() {
+	srand(time(0));
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	Menu program;
+	program.start();
+
+	return 0;
+}
+
 fstream& operator<<(fstream& fout, Question& quest) {
 	string tmp = quest.question;
 	replace(tmp.begin(), tmp.end(), ' ', '_');
@@ -43,7 +62,7 @@ fstream& operator>>(fstream& fin, Question& quest) {
 
 ostream& operator<<(ostream& os, const element& el) {
 	double percent = Test::calculate_score(el.correct, el.all_questions);
-	os << el.username << " - " << el.title << " | "<< el.correct <<"/" << el.all_questions << " | " << percent << "% | ÷е " << percent * 0.12 << " бал≥в\n";
+	os << el.username << " - " << el.title << " | " << el.correct << "/" << el.all_questions << " | " << percent << "% | ÷е " << percent * 0.12 << " бал≥в\n";
 	return os;
 }
 
@@ -51,15 +70,4 @@ fstream& operator<<(fstream& fout, const element& el) {
 	double percent = Test::calculate_score(el.correct, el.all_questions);
 	fout << el.username << " - " << el.title << " | " << el.correct << "/" << el.all_questions << " | " << percent << "% | ÷е " << percent * 0.12 << " бал≥в\n";
 	return fout;
-}
-
-int main() {
-	srand(time(0));
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-
-	Menu program;
-	program.start();
-
-	return 0;
 }
