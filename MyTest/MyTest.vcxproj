@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectoryMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Statistic.cpp" />
@@ -148,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectoryMenu.h" />
-    <ClInclude Include="FilePathes.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Statistic.h" />
     <ClInclude Include="Test.h" />

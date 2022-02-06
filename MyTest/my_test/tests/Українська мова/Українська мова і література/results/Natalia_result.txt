@@ -1,1 +1,1 @@
-ended 9 9
+not_ended 0 0
