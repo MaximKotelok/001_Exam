@@ -44,7 +44,7 @@ bool Menu::check_users() {
 }
 
 void Menu::regular_user_menu() {
-	cout << "--= USER MENU=--\n";
+	cout << "--= USER MENU =--\n";
 	cout << "0. Вийти\n";
 	cout << "1. Запустити тест\n";
 	cout << "2. Змінити пароль\n";
@@ -74,7 +74,7 @@ void Menu::regular_user_menu() {
 }
 
 void Menu::admin_menu() {
-	cout << "--= ADMIN MENU=--\n";
+	cout << "--= ADMIN MENU =--\n";
 	cout << "0. Вийти\n";
 	cout << "1. Змінити нікнейм\n";
 	cout << "2. Змінити пароль\n";

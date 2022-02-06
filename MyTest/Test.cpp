@@ -128,35 +128,35 @@ string Test::start(fstream& file, string username) {
 		file.close();
 		int choice;
 
-		for (size_t size = questions.size(), now = question_now; now < size; question_now++) {
+		for (size_t size = questions.size(), now = question_now; now < size; now++) {
 			question_now = now;
 			file.open(result_path, fstream::out);
 
-			file << "not_ended " << question_now << " " << stat << "\n";
+			file << "not_ended " << now << " " << stat << "\n";
 			file.close();
-			questions[question_now].set_random_positions();
-			questions[question_now].print(question_now + 1);
+			questions[now].set_random_positions();
+			questions[now].print(now + 1);
 			do {
 				cin >> choice;
 
 			} while (choice <= 0 || choice > questions[question_now].number_of_answers());
 
-			this->stat += questions[question_now].is_correct(choice);
+			this->stat += questions[now].is_correct(choice);
 
 			system("pause");
 			system("cls");
 
 		}
-		file.open(result_path, fstream::out);
-		result = to_string(stat) + " " + to_string(questions.size()) + "\n";
-		file << "ended " << result;
-		file.close();
 	}
 	else {
 		file >> stat;
 		file.close();
 
 	}
+	file.open(result_path, fstream::out);
+	result = to_string(stat) + " " + to_string(questions.size()) + "\n";
+	file << "ended " << result;
+	file.close();
 	double percent = calculate_score(stat, questions.size());
 	cout << username << " - " << title << " | " << stat << "/" << questions.size() << " | " << percent << "% | Це " << percent * 0.12 << " балів\n";
 	return result;
@@ -175,6 +175,7 @@ Test Test::create(fstream& file, string path) {
 	path += "\\" + title;
 	_mkdir(path.c_str());
 	do {
+		system("cls");
 		cout << "Питання: ";
 		getline(cin, question);
 		if (question == "EXIT")

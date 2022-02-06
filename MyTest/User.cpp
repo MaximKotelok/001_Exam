@@ -49,6 +49,8 @@ string User::get_username() {
 
 
 int User::set_username(string username) {
+	transform(username.begin(), username.end(), username.begin(),
+		[](char& c) { return std::tolower(c); });
 	if (DirectoryMenu::change_directory_name((SettingsConst::PATH_TO_USERS + "\\" + this->username), (SettingsConst::PATH_TO_USERS + "\\" + username)) != 0) {
 		if (DirectoryMenu::get_files(SettingsConst::PATH_TO_USERS + "\\" + username).size() != 0)
 			throw exception("Цей нікнейм зайнятий!");
