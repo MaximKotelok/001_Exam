@@ -135,11 +135,11 @@ class Menu
 			{
 				string path = Pathes::PATH_TO_TESTS;
 				if (DirectoryMenu::menu(path, "end", "")) {
-					string category= DirectoryMenu::get_end_of_path(path, 1);
+					string category = DirectoryMenu::get_end_of_path(path, 1);
 					Statistic::print_statistic(fs, Statistic::get_category_statistic(fs, category));
 				}
 			}
-				break;
+			break;
 			case 5:
 			{
 				string path = Pathes::PATH_TO_TESTS;
@@ -153,27 +153,45 @@ class Menu
 				string directory_name;
 				cout << "Назва директорії: ";
 				getline(cin, directory_name);
-				if(_mkdir((Pathes::PATH_TO_TESTS +"\\" + directory_name).c_str()) == 0)_mkdir((Pathes::PATH_TO_TESTS + "\\" + directory_name+"\\"+"end").c_str());
+				if (_mkdir((Pathes::PATH_TO_TESTS + "\\" + directory_name).c_str()) == 0)_mkdir((Pathes::PATH_TO_TESTS + "\\" + directory_name + "\\" + "end").c_str());
 
 			}
-				break;
+				  break;
 			case 7: {
 				string path = Pathes::PATH_TO_TESTS;
 				if (DirectoryMenu::menu(path, "end", "")) {
 					Test::create(fs, path);
 				}
 			}
-				break;
+				  break;
 			case 8:
 				registration(false);
 				break;
 			case 9:
+			{
+				string path_to_user;
 				string path = Pathes::PATH_TO_USERS;
 				if (DirectoryMenu::menu(path, "results", user.get_username())) {
-					Statistic::print_statistic(fs, Statistic::get_user_statistic(fs, DirectoryMenu::get_end_of_path(path, 1)));
+					path_to_user = path;
+					list<string> pathes = DirectoryMenu::get_directories(path + "\\results");
+					for (auto tmp_path : pathes) {
+						list<string> files = DirectoryMenu::get_files(tmp_path);
+						for (auto tests : files) {
+							Test::delete_test_result(DirectoryMenu::get_end_of_path(tests, 2), DirectoryMenu::path_to_title(tests, ".txt"), DirectoryMenu::get_end_of_path(tests, 4));
+						}
+					}
 				}
+				DirectoryMenu::delete_path(path_to_user);
+			}
 				break;
-
+			case 10:
+			{
+				string path = Pathes::PATH_TO_USERS;
+				if (DirectoryMenu::menu(path, "", user.get_username(),true)) {
+					Test::delete_test_result(DirectoryMenu::get_end_of_path(path, 2), DirectoryMenu::path_to_title(path, ".txt"), DirectoryMenu::get_end_of_path(path, 4));
+				}
+			}
+			break;
 			}
 
 

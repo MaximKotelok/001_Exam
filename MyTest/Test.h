@@ -6,6 +6,8 @@
 #include <fstream>
 #include <direct.h>
 
+#include "FilePathes.h"
+#include "DirectoryMenu.h"
 using namespace std;
 
 
@@ -157,6 +159,12 @@ public:
 
 	string get_title() {
 		return title;
+	}
+
+	static bool delete_test_result(string category, string test_name, string username) {
+		DirectoryMenu::delete_path(Pathes::PATH_TO_USERS+"\\" + username + "\\results\\" + category + "\\" + test_name + ".txt");
+		DirectoryMenu::delete_path(Pathes::PATH_TO_TESTS+"\\"+category+"\\"+test_name+"\\results\\"+username+"_result.txt");
+		return true;
 	}
 
 	string start(fstream& file,string username) {

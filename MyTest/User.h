@@ -7,6 +7,8 @@
 
 #include "FilePathes.h"
 #include "DirectoryMenu.h"
+#include "Test.h"
+
 using namespace std;
 class User
 {

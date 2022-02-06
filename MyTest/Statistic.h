@@ -27,14 +27,6 @@ public:
 
 class Statistic
 {
-	static string path_to_title(string path, string extension) {
-		int index = -1;
-		for (int i = 0; i < path.size(); i++)
-			if (path[i] == '\\')
-				index = i;
-
-		return path.substr(index + 1, path.size() - index - 1 - extension.size());
-	}
 public:
 	static void print_statistic(fstream& file, list<element> statistic) {
 		file.open(Pathes::PATH_TO_STATISTIC, fstream::out);
@@ -56,7 +48,7 @@ public:
 			for (auto results : files) {
 
 			file.open(results, fstream::in);
-			string title = path_to_title(results, ".txt");
+			string title = DirectoryMenu::path_to_title(results, ".txt");
 			int correct, all_questions;
 			file >> correct >> all_questions;
 
@@ -77,7 +69,7 @@ public:
 		if (tests.size() == 0)
 			throw exception("Категорія не знайдена");
 		for (auto path : tests) {
-			list<element> second_result = get_test_statistic(file, category_name, path_to_title(path, ""));
+			list<element> second_result = get_test_statistic(file, category_name, DirectoryMenu::path_to_title(path, ""));
 			copy(second_result.begin(), second_result.end(), back_inserter(result));
 
 		}
@@ -94,7 +86,7 @@ public:
 			if (status == "ended") {
 				int correct, all_questions;
 				file >> correct >> all_questions;
-				string username = path_to_title(file_name, "_result.txt");
+				string username = DirectoryMenu::path_to_title(file_name, "_result.txt");
 				string title = test_name;
 
 				result.push_back({ username , title, correct, all_questions });

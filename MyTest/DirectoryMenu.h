@@ -2,6 +2,7 @@
 #include <list>
 #include <iostream>
 #include <filesystem>
+
 #include <direct.h>
 
 
@@ -30,6 +31,15 @@ class DirectoryMenu {
 
 public:
 
+	static string path_to_title(string path, string extension) {
+		int index = -1;
+		for (int i = 0; i < path.size(); i++)
+			if (path[i] == '\\')
+				index = i;
+
+		return path.substr(index + 1, path.size() - index - 1 - extension.size());
+	}
+
 	static string remove_end_of_path(string path) {
 		int index = -1;
 		for (int i = 0; i < path.size(); i++)
@@ -54,6 +64,15 @@ public:
 			return path;
 		}
 		
+	}
+
+	static bool delete_path(string path) {
+		fs::remove_all(path);
+		
+		bool res = true;
+		auto check = get_all_from_directories(remove_end_of_path(path));
+		for_each(check.begin(), check.end(), [&res, path](const string& tmp_path) {if (path == tmp_path)res = false; });
+		return res;
 	}
 
 	static list<string> get_all_from_directories(string path) {
@@ -93,22 +112,42 @@ public:
 		return rename(old_path.c_str(), new_path.c_str());
 	}
 
-	static bool menu(string& path, string end, string ignore) {
+	static bool menu(string& path, string end, string ignore, bool file_rewiew = false) {
 		string basic_path = path;
 		list<string> directories;
 		list<string>::iterator it;
 		int index;
+		bool is_stop = false;
 
 		do {
-			directories = DirectoryMenu::get_directories(path);
-			directories.remove(path + "\\" + ignore);
+			if (!is_stop) {
+
+				directories = DirectoryMenu::get_directories(path);
+				directories.remove(path + "\\" + ignore);
+			}
+			else
+				break;
 			auto found = find(directories.begin(), directories.end(), path + "\\" + end);
 
 
 			if (found != directories.end())
 				break;
-			cout << "0. Назад\n";
-			index = get_index_of_directory(path, directories);
+
+			if (file_rewiew && directories.size() == 0) {
+					directories = DirectoryMenu::get_files(path);
+					is_stop = true;
+			}
+
+			
+			if (directories.size() != 0) {
+
+				cout << "0. Назад\n";
+				index = get_index_of_directory(path, directories);
+			}
+			else {
+				index = -1;
+				cout << "Директорія порожня\n";
+			}
 
 			if (index != -1) {
 				it = directories.begin();
@@ -121,9 +160,10 @@ public:
 					return false;
 
 				path = remove_end_of_path(path);
-
+				is_stop = false;
 			}
 		} while (true);
+
 		return true;
 
 	}
